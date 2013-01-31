@@ -4,7 +4,7 @@
 #
 module GoogleCustomSearch
   extend self
-  
+
   ##
   # Quick Struct-based class to hold a collection of search result data.
   #
@@ -19,7 +19,7 @@ module GoogleCustomSearch
   # Search the site.
   #
   def search(query, offset = 0, length = 20)
-    
+
     # Get and parse results.
     url = url(query, offset, length)
     return nil unless xml = fetch_xml(url)
@@ -36,10 +36,10 @@ module GoogleCustomSearch
       ResultSet.new(0, [], nil)
     end
   end
-  
-  
+
+
   private # -------------------------------------------------------------------
-  
+
   ##
   # Build search request URL.
   #
@@ -58,7 +58,7 @@ module GoogleCustomSearch
     end
     "http://www.google.com/search?" + params.to_query
   end
-  
+
   ##
   # Query Google, and make sure it responds.
   #
@@ -71,7 +71,7 @@ module GoogleCustomSearch
     rescue SocketError, TimeoutError; end
     (resp and resp.code == "200") ? resp.body : nil
   end
-  
+
   ##
   # Transform an array of Google search results (XML parsed by REXML) into
   # a more useful format.
