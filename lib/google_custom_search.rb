@@ -18,10 +18,11 @@ module GoogleCustomSearch
   ##
   # Search the site.
   #
-  def search(query, offset = 0, length = 20)
+  # def search(query, offset = 0, length = 20)
+  def search(params)
 
     # Get and parse results.
-    url = url(query, offset, length)
+    url = url(params)
     return nil unless xml = fetch_xml(url)
     data = Hash.from_xml(xml)['GSP']
 
@@ -43,20 +44,29 @@ module GoogleCustomSearch
   ##
   # Build search request URL.
   #
-  def url(query, offset = 0, length = 20)
-    params = {
-      :q      => query,
-      :start  => offset,
-      :num    => length,
+  def url(params)
+    params.reverse_merge!(default_params)
+    "http://www.google.com/search?" + convert_params_to_query(params)
+  end
+
+  def default_params
+    {
+      :offset => 0,
+      :length => 20,
       :client => "google-csbe",
-      :output => "xml_no_dtd",
-      :cx     => GOOGLE_SEARCH_CX
+      :output => "xml_no_dtd"
     }
-    begin
-      params.merge!(GOOGLE_SEARCH_PARAMS)
-    rescue NameError
-    end
-    "http://www.google.com/search?" + params.to_query
+  end
+
+  def convert_params_to_query(params)
+    {
+      :q      => params.fetch(:query),
+      :start  => params.fetch(:offset),
+      :num    => params.fetch(:length),
+      :client => params.fetch(:client),
+      :output => params.fetch(:output),
+      :cx     => params.fetch(:cx)
+    }.to_query
   end
 
   ##
